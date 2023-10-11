@@ -1,0 +1,7 @@
+embedded
+miniforge
+
+.idea/
+cmake-build-debug/
+cmake-build-release/
+bin/
