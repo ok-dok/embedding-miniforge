@@ -165,7 +165,7 @@ locate_conda_path(){
     case "$OS_TYPE" in
       darwin*|linux*)
         CONDA_PATH=$(dirname $(whereis conda | awk -F': ' '{print $2}' 2>/dev/null) 2>/dev/null | sed 's/[[:space:]]//g')
-        if [ $? != 0 ]; then
+        if [ "${CONDA_PATH}" == "" ]; then
           if ls "${DEFAULT_INSTALL_PATH}/bin/" >/dev/null 2>&1; then
             CONDA_PATH="${DEFAULT_INSTALL_PATH}/bin" && return 0
           else
@@ -175,7 +175,7 @@ locate_conda_path(){
         ;;
       win*)
         CONDA_PATH=$(dirname $(whereis conda | awk -F': ' '{print $2}' 2>/dev/null) 2>/dev/null | sed 's/[[:space:]]//g')
-        if [ $? != 0 ]; then
+        if [ "${CONDA_PATH}" == "" ]; then
           menu_dir=$(ls "$HOME/AppData/Roaming/Microsoft/Windows/Start Menu/Programs" | grep -i "anaconda")
           lnk_name=$(ls "$HOME/AppData/Roaming/Microsoft/Windows/Start Menu/Programs/$menu_dir/" | grep -vi "powershell" | grep -ioE ".*\.lnk")
           lnk_file="$HOME/AppData/Roaming/Microsoft/Windows/Start Menu/Programs/$menu_dir/$lnk_name"
