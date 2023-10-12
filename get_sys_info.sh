@@ -18,14 +18,14 @@ get_sys_info() {
   os_type="$(uname | sed 'y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/')"
   os_arch="$(uname -m)"
   # When running inside Git bash on Windows, `uname` reports "MINGW64_NT".
-  case $os_type in mingw64_nt* | msys_nt*)
+  case $os_type in mingw64_nt* | msys_nt* | win*)
     os_type="windows"
     ;;
   esac
-  # then judge $os_type, such as 'darwin', 'win', 'linux'
+  # then judge $os_type, such as 'darwin', 'windows', 'linux'
   case "$os_type" in
     darwin*)
-      os_type="MacOSX"
+      os_type="darwin"
       # detect cpu arch info
       os_arch=$(uname -a | awk -F " " '{print $(NF-1)}' | grep  -ioE '(arm(32|64))|(aarch(32|64))|(x86(([_-]{1}(32|64))|(.{0})))|(amd(32|64))|(i386)' | tr [A-Z] [a-z])
       ;;
@@ -41,7 +41,7 @@ get_sys_info() {
           ;;
       esac
       ;;
-    win*)
+    windows*)
       os_arch=$(wmic cpu get AddressWidth | grep -v "AddressWidth" | xargs echo )
       os_arch="x86_$os_arch"
       ;;
