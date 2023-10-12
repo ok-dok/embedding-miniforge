@@ -59,8 +59,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: Run archive package
         run: |
-          PKG_NAME="embedding-py-conda"
+          PKG_NAME="embedding-miniforge"
           mkdir -p "${PKG_NAME}/bin"
           ls -lh bin
-          cp bin/lnkparse.exe bin/install-python.sh "${PKG_NAME}/bin"
+          cp bin/lnkparse.exe bin/install.sh "${PKG_NAME}/bin"
           tar -czvf "${PKG_NAME}.tgz" "${PKG_NAME}"
