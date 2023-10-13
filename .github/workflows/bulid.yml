@@ -88,7 +88,20 @@ jobs:
       - name: Run archive package
         run: |
           PKG_NAME="embedding-miniforge"
-          mkdir -p "${PKG_NAME}/bin"
+          mkdir -p "${PKG_NAME}/"
           ls -lh ./
-          cp lnkparse.exe install.sh "${PKG_NAME}/bin"
+          cp lnkparse.exe install.sh "${PKG_NAME}/"
           tar -czvf "${PKG_NAME}.tgz" "${PKG_NAME}"
+          zip -r "${PKG_NAME}.zip" "${PKG_NAME}"
+      - name: Test
+        run: 
+          ls -lh ./embedding-miniforge.*
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Release
+        uses: softprops/action-gh-release@latest
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: |
+            embedding-miniforge.tgz
+            embedding-miniforge.zip
