@@ -79,7 +79,7 @@ jobs:
     env:
       PKG_NAME: "embedding-miniforge"
     steps:
-      - name: Download lnkparse
+      - name: Download lnkparse.exe
         uses: actions/download-artifact@v3
         with:
           name: linkparse
@@ -105,5 +105,5 @@ jobs:
         with:
           repository: ok-dok/embedding-miniforge
           files: |
-            ${PKG_NAME}.tgz
-            ${PKG_NAME}.zip
+            embedding-miniforge.tgz
+            embedding-miniforge.zip
