@@ -7,8 +7,7 @@ on:
   # Triggers the workflow on push or pull request events but only for the "main" branch
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+    tags: [ "v*" ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -38,6 +37,13 @@ jobs:
           move bin\Release\lnkparse.exe ..\bin
           cd ..
           dir bin
+      - name: Archive production artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: linkparse
+          retention-days: 1
+          path: |
+            bin/lnkparse.exe
   
   Run-argbash-gen-on-ubuntu:
     # The type of runner that the job will run on
@@ -57,6 +63,13 @@ jobs:
           fi
           mkdir -p bin
           argbash install.m4 -o bin/install.sh
+      - name: Archive production artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: install
+          retention-days: 1
+          path: |
+            bin/install.sh
 
   Run-archive-on-ubuntu:
     runs-on: ubuntu-latest
@@ -64,11 +77,18 @@ jobs:
       - Run-argbash-gen-on-ubuntu
       - Run-build-linkparse-on-windows
     steps:
-      - uses: actions/checkout@v4
+      - name: Download math result for job 1
+        uses: actions/download-artifact@v3
+        with:
+          name: linkparse
+      - name: Download math result for job 2
+        uses: actions/download-artifact@v3
+        with:
+          name: install
       - name: Run archive package
         run: |
           PKG_NAME="embedding-miniforge"
           mkdir -p "${PKG_NAME}/bin"
-          ls -lh bin
-          cp bin/lnkparse.exe bin/install.sh "${PKG_NAME}/bin"
+          ls -lh ./
+          cp lnkparse.exe install.sh "${PKG_NAME}/bin"
           tar -czvf "${PKG_NAME}.tgz" "${PKG_NAME}"
