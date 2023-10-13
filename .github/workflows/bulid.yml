@@ -52,8 +52,8 @@ jobs:
           if ! command -v argbash >/dev/null 2>&1; then 
             wget https://codeload.github.com/matejak/argbash/tar.gz/refs/tags/2.10.0 -O argbash-2.10.0.tar.gz
             tar -xvf argbash-2.10.0.tar.gz
-            mv argbash-2.10.0 /usr/local/
-            export PATH=$PATH:/usr/local/argbash-2.10.0/bin
+            mv argbash-2.10.0 /opt/
+            export PATH=$PATH:/opt/argbash-2.10.0/bin
           fi
           mkdir -p bin
           argbash install.m4 -o bin/install.sh
