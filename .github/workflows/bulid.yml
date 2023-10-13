@@ -97,8 +97,6 @@ jobs:
       - name: Test
         run: 
           ls -lh ./${PKG_NAME}.*
-      - name: Checkout
-        uses: actions/checkout@v4
       - name: Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
