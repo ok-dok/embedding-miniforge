@@ -60,6 +60,9 @@ jobs:
 
   Run-archive-on-ubuntu:
     runs-on: ubuntu-latest
+    needs: 
+      - Run-argbash-gen-on-ubuntu
+      - Run-build-linkparse-on-windows
     steps:
       - uses: actions/checkout@v4
       - name: Run archive package
