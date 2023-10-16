@@ -98,7 +98,7 @@ eval $(get_sys_info)
 
 case "$OS_TYPE" in
   win*)
-    which whereis 2>/dev/null
+    which whereis >/dev/null 2>&1
     if [ $? -ne 0 ]; then
       mingw64_path=$(dirname $(which git 2>/dev/null))
       if [ $? -ne 0 ] || [ "${mingw64_path}" == "" ];then
