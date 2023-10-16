@@ -94,24 +94,6 @@ get_sys_info() {
   return 0
 }
 
-eval $(get_sys_info)
-
-case "$OS_TYPE" in
-  win*)
-    which whereis >/dev/null 2>&1
-    if [ $? -ne 0 ]; then
-      mingw64_path=$(dirname $(which git 2>/dev/null))
-      if [ $? -ne 0 ] || [ "${mingw64_path}" == "" ];then
-          mingw64_path="/mingw64/bin/"
-      fi
-      if ! [ -d "${mingw64_path}" ]; then
-        error "cannot detect mingw64's bin path, you can copy ./whereis.exe to mingw64/bin path and retry" && return 1
-      fi
-      cp whereis.exe ${mingw64_path}
-    fi
-    ;;
-esac
-
 DEFAULT_INSTALL_PATH="$HOME/miniforge3"
 DOWNLOAD_PATH="miniforge"
 
@@ -217,10 +199,6 @@ locate_and_activate_conda(){
 }
 
 install_conda() {
-  if [ "$OS_TYPE" = "" ] || [ "$OS_ARCH" = "" ]; then
-    error "cannot detected your system version info" && return 1
-  fi
-  info "detected system info, OS_TYPE: $OS_TYPE, OS_ARCH: $OS_ARCH"
   # get miniforge3 install package
   case "$OS_TYPE" in
     darwin*|linux*)
@@ -371,6 +349,27 @@ main() {
     fi
   fi
 }
+
+eval $(get_sys_info)
+if [ "$OS_TYPE" = "" ] || [ "$OS_ARCH" = "" ]; then
+    error "cannot detected your system version info" && return 1
+fi
+info "detected system info, OS_TYPE: $OS_TYPE, OS_ARCH: $OS_ARCH"
+case "$OS_TYPE" in
+  win*)
+    which whereis >/dev/null 2>&1
+    if [ $? -ne 0 ]; then
+      mingw64_path=$(dirname $(which git 2>/dev/null))
+      if [ $? -ne 0 ] || [ "${mingw64_path}" == "" ];then
+          mingw64_path="/mingw64/bin/"
+      fi
+      if ! [ -d "${mingw64_path}" ]; then
+        error "cannot detect mingw64's bin path, you can copy ./whereis.exe to mingw64/bin path and retry" && return 1
+      fi
+      cp whereis.exe ${mingw64_path}
+    fi
+    ;;
+esac
 
 main
 # ^^^  TERMINATE YOUR CODE BEFORE THE BOTTOM ARGBASH MARKER  ^^^
