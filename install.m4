@@ -102,7 +102,7 @@ install_on_windows() {
   if [ "$_arg_offline" = "on" ]; then
     pkgexe=$(ls ${DOWNLOAD_PATH} | grep -ioE "Miniforge3-${OS_TYPE}-${OS_ARCH}.*\.exe")
   else
-    local latest_tag=$(curl -kis --max-redirs 1 https://github.com/conda-forge/miniforge/releases/latest | grep location | awk -F '/' '{print $NF}' | sed 's/[[:space:]]//g' )
+    local latest_tag=$(curl -kis --max-redirs 1 https://github.com/conda-forge/miniforge/releases/latest | grep -i location | awk -F '/' '{print $NF}' | sed 's/[[:space:]]//g' )
     pkgexe=$(curl -sk "https://github.com/conda-forge/miniforge/releases/expanded_assets/${latest_tag}" |
                 grep -ioE "href=\"/conda-forge/miniforge/releases/download/${latest_tag}/.*\.exe" |
                 sed 's/href="//' | grep -ioE "Miniforge3-${OS_TYPE}-${OS_ARCH}\.exe")
