@@ -225,6 +225,17 @@ install_conda() {
       install_on_windows || return $?
       info "conda init"
       locate_and_activate_conda || return $?
+      conda init cmd.exe
+      conda init powershell
+      # init current shell profile
+      case $(basename "$SHELL") in
+        bash*)
+          conda init bash && . "$HOME/.bash_profile"
+          ;;
+        *)
+          conda init "$(basename "$SHELL")" && . "$HOME/*profile"
+      esac
+      return $?
       ;;
   esac
 }
