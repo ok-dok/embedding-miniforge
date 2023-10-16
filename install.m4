@@ -159,6 +159,7 @@ install_on_linux_or_macos(){
   return $?
 }
 
+CONDA_PATH=""
 locate_conda_path(){
     case "$OS_TYPE" in
       darwin*|linux*)
@@ -180,7 +181,7 @@ locate_conda_path(){
           if [ "$lnk_name" = "" ] || [ ! -e "$lnk_file" ]; then
               warn "cannot find the miniforge startup lnk file in Start Menu" && return 1
           fi
-          CONDA_PATH=$("$(pwd)/lnkparse.exe" "${lnk_file}" | awk -F' ' '{print $3"\\Scripts"}')
+          CONDA_PATH=$("$(pwd)/lnkparse.exe" "${lnk_file}" | awk -F' ' '{print $3"\\Scripts"}' | sed 's/\\/\//g')
           if [ $? != 0 ]; then
               warn "cannot get the installed path of conda(forge)" && return 1
           fi
@@ -240,9 +241,9 @@ check_and_install_conda() {
     else
       # 强制安装的情况下先删除原先已存在的conda(forge)环境
       conda init --reverse
-      installed_path=$(dirname ${CONDA_PATH})
+      installed_path=$(dirname "${CONDA_PATH}")
       info "cleaning conda directory: ${installed_path}"
-      rm -rf ${installed_path}
+      rm -rf "${installed_path}"
     fi
   else
     info "there is no conda environment"
