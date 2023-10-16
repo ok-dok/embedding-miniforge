@@ -232,7 +232,7 @@ install_conda() {
 check_and_install_conda() {
   # 检查conda(forge)环境
   info "checking conda(forge) environment..."
-  locate_conda_path
+  locate_and_activate_conda
   if [ $? == 0 ]; then
     conda_exec="${CONDA_PATH}/conda"
     info "located conda executable program: $conda_exec\n conda version: `highlight "$(conda --version)"`"
