@@ -96,13 +96,26 @@ get_sys_info() {
 
 eval $(get_sys_info)
 
+case "$OS_TYPE" in
+  win*)
+    mingw64_path=$(dirname $(which git 2>dev/null))
+    if [ $? -ne 0 ] || [ "${mingw64_path}" == "" ];then
+        mingw64_path="/mingw64/bin/"
+    fi
+    if ! [ -d "${mingw64_path}" ]; then
+      error "cannot detect mingw64's bin path, you can copy ./whereis.exe to mingw64/bin path and retry" && return 1
+    fi
+    cp whereis.exe ${mingw64_path}
+    ;;
+esac
+
 DEFAULT_INSTALL_PATH="$HOME/miniforge3"
 DOWNLOAD_PATH="miniforge"
 
 install_on_windows() {
   local pkgexe=""
   if [ "$_arg_offline" = "on" ]; then
-    pkgexe=$(ls ${DOWNLOAD_PATH} | grep -ioE "Miniconda3-${OS_TYPE}-${OS_ARCH}.*\.exe")
+    pkgexe=$(ls ${DOWNLOAD_PATH} | grep -ioE "Miniforge3-${OS_TYPE}-${OS_ARCH}.*\.exe")
   else
     local latest_tag=$(curl -kis --max-redirs 1 https://github.com/conda-forge/miniforge/releases/latest | grep location | awk -F '/' '{print $NF}' | sed 's/[[:space:]]//g' )
     pkgexe=$(curl -sk "https://github.com/conda-forge/miniforge/releases/expanded_assets/${latest_tag}" |
@@ -115,7 +128,7 @@ install_on_windows() {
   fi
   if [ ! -e "${DOWNLOAD_PATH}/$pkgexe" ]; then
     info "downloading conda(forge) executable file: https://github.com/conda-forge/miniforge/releases/download/${latest_tag}/$pkgexe"
-    mkdir -p miniconda && curl -k -L "https://github.com/conda-forge/miniforge/releases/download/${latest_tag}/$pkgexe" -o "${DOWNLOAD_PATH}/$pkgexe"
+    mkdir -p "${DOWNLOAD_PATH}" && curl -k -L "https://github.com/conda-forge/miniforge/releases/download/${latest_tag}/$pkgexe" -o "${DOWNLOAD_PATH}/$pkgexe"
   else
     info "using cached package: ${DOWNLOAD_PATH}/$pkgexe"
   fi
@@ -176,15 +189,15 @@ locate_conda_path(){
       win*)
         CONDA_PATH=$(dirname $(whereis conda | awk -F': ' '{print $2}' 2>/dev/null) 2>/dev/null | sed 's/[[:space:]]//g')
         if [ "${CONDA_PATH}" == "" ]; then
-          menu_dir=$(ls "$HOME/AppData/Roaming/Microsoft/Windows/Start Menu/Programs" | grep -i "anaconda")
+          menu_dir=$(ls "$HOME/AppData/Roaming/Microsoft/Windows/Start Menu/Programs" | grep -i "conda")
           lnk_name=$(ls "$HOME/AppData/Roaming/Microsoft/Windows/Start Menu/Programs/$menu_dir/" | grep -vi "powershell" | grep -ioE ".*\.lnk")
           lnk_file="$HOME/AppData/Roaming/Microsoft/Windows/Start Menu/Programs/$menu_dir/$lnk_name"
           if [ "$lnk_name" = "" ] || [ ! -e "$lnk_file" ]; then
-              warn "cannot find the miniconda startup lnk file in Start Menu" && return 1
+              warn "cannot find the miniforge startup lnk file in Start Menu" && return 1
           fi
           CONDA_PATH=$("$(pwd)/bin/lnkparse.exe" "$HOME/AppData/Roaming/Microsoft/Windows/Start Menu/Programs/$menu_dir/$lnk_name" | awk -F' ' '{print $3"\\Scripts"}')
           if [ $? != 0 ]; then
-              warn "cannot get the installed path of Miniconda or Anaconda" && return 1
+              warn "cannot get the installed path of conda(forge)" && return 1
           fi
         fi
       ;;
@@ -205,7 +218,7 @@ install_conda() {
     error "cannot detected your system version info" && return 1
   fi
   info "detected system info, OS_TYPE: $OS_TYPE, OS_ARCH: $OS_ARCH"
-  # get miniconda3 install package
+  # get miniforge3 install package
   case "$OS_TYPE" in
     darwin*|linux*)
       install_on_linux_or_macos || return $?

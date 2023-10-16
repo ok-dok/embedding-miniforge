@@ -37,13 +37,20 @@ jobs:
           move bin\Release\lnkparse.exe ..\bin
           cd ..
           dir bin
-      - name: Archive
+      - name: Archive lnkparse
         uses: actions/upload-artifact@v3
         with:
           name: linkparse
           retention-days: 1
           path: |
             bin/lnkparse.exe
+      - name: Archive whereis
+        uses: actions/upload-artifact@v3
+        with:
+          name: whereis
+          retention-days: 1
+          path: |
+            pkgs/win/whereis.exe
   
   Run-build-script-on-ubuntu:
     # The type of runner that the job will run on
@@ -83,17 +90,19 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: linkparse
+      - name: Download whereis.exe
+        uses: actions/download-artifact@v3
+        with:
+          name: whereis
       - name: Download install.sh
         uses: actions/download-artifact@v3
         with:
           name: install
       - name: Archive package
         run: |
-          mkdir -p "${PKG_NAME}/"
           ls -lh ./
-          cp lnkparse.exe install.sh "${PKG_NAME}/"
-          tar -czvf "${PKG_NAME}.tgz" "${PKG_NAME}"
-          zip -r "${PKG_NAME}.zip" "${PKG_NAME}"
+          tar -czvf "${PKG_NAME}.tgz" whereis.exe lnkparse.exe install.sh
+          zip -r "${PKG_NAME}.zip" whereis.exe lnkparse.exe install.sh
       - name: Test
         run: 
           ls -lh ./${PKG_NAME}.*
