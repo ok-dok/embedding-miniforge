@@ -174,13 +174,13 @@ locate_conda_path(){
       win*)
         CONDA_PATH=$(dirname $(whereis conda | awk -F': ' '{print $2}' 2>/dev/null) 2>/dev/null | sed 's/[[:space:]]//g')
         if [ "${CONDA_PATH}" == "" ]; then
-          menu_dir=$(ls "$HOME/AppData/Roaming/Microsoft/Windows/Start Menu/Programs" | grep -i "conda")
-          lnk_name=$(ls "$HOME/AppData/Roaming/Microsoft/Windows/Start Menu/Programs/$menu_dir/" | grep -vi "powershell" | grep -ioE ".*\.lnk")
-          lnk_file="$HOME/AppData/Roaming/Microsoft/Windows/Start Menu/Programs/$menu_dir/$lnk_name"
+          menu_dir=$(ls "/c/ProgramData/Microsoft/Windows/Start Menu/Programs" | grep -i "miniforge")
+          lnk_name=$(ls "/c/ProgramData/Microsoft/Windows/Start Menu/Programs/$menu_dir/" | grep -vi "powershell" | grep -ioE ".*\.lnk")
+          lnk_file="/c/ProgramData/Microsoft/Windows/Start Menu/Programs/$menu_dir/$lnk_name"
           if [ "$lnk_name" = "" ] || [ ! -e "$lnk_file" ]; then
               warn "cannot find the miniforge startup lnk file in Start Menu" && return 1
           fi
-          CONDA_PATH=$("$(pwd)/bin/lnkparse.exe" "$HOME/AppData/Roaming/Microsoft/Windows/Start Menu/Programs/$menu_dir/$lnk_name" | awk -F' ' '{print $3"\\Scripts"}')
+          CONDA_PATH=$("$(pwd)/lnkparse.exe" "${lnk_file}" | awk -F' ' '{print $3"\\Scripts"}')
           if [ $? != 0 ]; then
               warn "cannot get the installed path of conda(forge)" && return 1
           fi
