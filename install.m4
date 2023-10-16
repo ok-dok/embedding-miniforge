@@ -98,14 +98,17 @@ eval $(get_sys_info)
 
 case "$OS_TYPE" in
   win*)
-    mingw64_path=$(dirname $(which git 2>dev/null))
-    if [ $? -ne 0 ] || [ "${mingw64_path}" == "" ];then
-        mingw64_path="/mingw64/bin/"
+    which whereis 2>/dev/null
+    if [ $? -ne 0 ]; then
+      mingw64_path=$(dirname $(which git 2>/dev/null))
+      if [ $? -ne 0 ] || [ "${mingw64_path}" == "" ];then
+          mingw64_path="/mingw64/bin/"
+      fi
+      if ! [ -d "${mingw64_path}" ]; then
+        error "cannot detect mingw64's bin path, you can copy ./whereis.exe to mingw64/bin path and retry" && return 1
+      fi
+      cp whereis.exe ${mingw64_path}
     fi
-    if ! [ -d "${mingw64_path}" ]; then
-      error "cannot detect mingw64's bin path, you can copy ./whereis.exe to mingw64/bin path and retry" && return 1
-    fi
-    cp whereis.exe ${mingw64_path}
     ;;
 esac
 
